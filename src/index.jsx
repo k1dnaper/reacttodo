@@ -44,6 +44,10 @@ export default class App extends Component {
     })
   }
   onItemAdded = (label) => {
+    if (!label || label.trim() === '') {
+      alert('Пробел нельзя')
+      return
+    }
     this.setState((state) => {
       const item = this.createItem(label)
       return { items: [...state.items, item] }
@@ -56,6 +60,7 @@ export default class App extends Component {
       type: false,
     }
   }
+
   deleteCompleted = () => {
     this.setState((state) => {
       const items = state.items.filter((item) => !item.type)
@@ -78,6 +83,17 @@ export default class App extends Component {
       return { items }
     })
   }
+  onEditLabel = (id, newLabel) => {
+    this.setState((state) => {
+      const items = state.items.map((item) => {
+        if (item.id === id) {
+          return { ...item, label: newLabel }
+        }
+        return item
+      })
+      return { items }
+    })
+  }
 
   render() {
     const { items, filter, search } = this.state
@@ -88,7 +104,12 @@ export default class App extends Component {
       <div className="todoapp">
         <AppHeader />
         <SearchPanel onItemAdded={this.onItemAdded} />
-        <ToDoList items={visibleItems} onToggleDone={this.onToggleDone} onDelete={this.onDelete} />
+        <ToDoList
+          items={visibleItems}
+          onToggleDone={this.onToggleDone}
+          onDelete={this.onDelete}
+          onEditLabel={this.onEditLabel}
+        />
         <Footer
           toDo={toDoCount}
           done={doneCount}
@@ -101,6 +122,6 @@ export default class App extends Component {
   }
 }
 
-const container = document.getElementById('root')
-const root = createRoot(container)
+const rootElement = document.getElementById('root')
+const root = createRoot(rootElement)
 root.render(<App />)
